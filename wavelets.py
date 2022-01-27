@@ -54,23 +54,7 @@ def get_markdown_text(filename):
     return ''.join(lines)
 
 
-PASS = 'c750a40e2e5c5c1029326927401d4a21'
-
-if 'password' not in st.session_state:
-    show_password()
-    hash = hashlib.md5(st.session_state.password.encode()).hexdigest()
-
-else:
-    hash = hashlib.md5(st.session_state.password.encode()).hexdigest()
-    if hash != PASS:
-        show_password()
-        hash = hashlib.md5(st.session_state.password.encode()).hexdigest()
-        if hash != PASS:
-            st.warning("Wrong password")
-    
-
-if hash == PASS:
-    
+def show_app():
     st.sidebar.subheader("Menu")
     for t in mapping.keys():    
         st.sidebar.button(t, on_click=show_page, key='menu' + t, args=(t, ))
@@ -84,4 +68,27 @@ if hash == PASS:
     func = mapping[page]    
     func()
     st.write("")
-    show_nav_buttons(page)    
+    show_nav_buttons(page)
+
+
+def check_password():
+    PASS = 'c750a40e2e5c5c1029326927401d4a21'
+
+    if 'password' not in st.session_state:
+        show_password()
+        hash = hashlib.md5(st.session_state.password.encode()).hexdigest()
+
+    else:
+        hash = hashlib.md5(st.session_state.password.encode()).hexdigest()
+        if hash != PASS:
+            show_password()
+            hash = hashlib.md5(st.session_state.password.encode()).hexdigest()
+            if hash != PASS:
+                st.warning("Wrong password")
+        
+
+    if hash == PASS:
+        
+        show_app()
+
+show_app()
