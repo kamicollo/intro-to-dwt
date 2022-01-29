@@ -1,4 +1,4 @@
-## That's it, folks!
+## That's all, folks!
 
 I hope this was a useful introduction to wavelets and Discrete Wavelet Transformation. At the same time, it only scratches the surface of what is possible with wavelets, different type of transformations that can be applied and more. If Wavelet for Kids was too easy, you can always go for the real thing - [Statistical Modeling by Wavelets by Brani Vidakovich](https://web.stat.tamu.edu/~brani/scale/bank/StatisticalModelingbyWavelets.pdf) or other resources available. 
 

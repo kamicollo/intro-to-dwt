@@ -9,3 +9,5 @@ Alas, it works and is highly useful for anyone working with signal-like data. DW
 However, finding practical, easy to follow information on how DWT works and how to use it real life is not easy. This guide aims to fill the gap. I won't delve deep into the mathematics (because, frankly, I don't fully follow it myself); instead, I will focus on intuition and practical examples.
 
 Ready? Put on your invisibility cloak and let's go.
+
+P.S. Best viewed on a laptop / a larger screen!

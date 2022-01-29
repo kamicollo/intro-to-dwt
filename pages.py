@@ -118,7 +118,7 @@ def show_scalograms():
     signals = get_sample_signals()
 
     for r in signals.itertuples():
-        col = "lightgreen" if r[3] == "Unimpaired signal" else "lightred"
+        col = '#f1a340' if r[3] == "Unimpaired signal" else "#998ec3"
         c = alt.Chart(wrap_signal(r[2]), height=200).mark_line(color=col).encode(
             x='Frequency (MHz)',
             y='log(dB)'

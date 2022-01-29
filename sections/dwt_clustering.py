@@ -71,7 +71,7 @@ def build_scalogram(signals, sel_signals, decomp_func):
                 legend = alt.Legend(orient="bottom", title=None),
                 scale=alt.Scale(
                     domain=['Unimpaired signal', 'Wave impairment + upstream modulation', 'Tilt / wave impairment', 'Wave impairment'], 
-                    range=['green', 'Orange', 'red', 'red']
+                    range=['#f1a340', '#f7f7f7', '#998ec3', '#998ec3']
                 )),
             strokeDash= alt.StrokeDash('key', legend = None)
         ).properties()
