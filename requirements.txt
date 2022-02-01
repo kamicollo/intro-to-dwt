@@ -5,4 +5,4 @@ plotly
 PyWavelets==1.1.1
 scikit_learn==1.0.2
 scipy==1.7.3
-streamlit==1.4.0
+streamlit==1.5.0
