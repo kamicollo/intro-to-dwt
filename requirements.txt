@@ -6,3 +6,4 @@ PyWavelets==1.1.1
 scikit_learn==1.0.2
 scipy==1.7.3
 streamlit==1.5.0
+polars==0.12.19 

@@ -149,7 +149,8 @@ def show_clustering():
     
     st.markdown(get_markdown_text("clustering-1"))
 
-    node_data = get_node()
+    node_data = get_node()    
+
     sp_mat = dwt_clustering.get_sparse_matrix()    
     threshold = 5500
     model, clusters = dwt_clustering.run_clustering(sp_mat, threshold)
@@ -203,12 +204,17 @@ def show_clustering():
     c2.write(descs[selected_cl])
 
     for id in s_ids:
-        s = wrap_signal(node_data["amplitudes"].values[id])        
+        id_df = node_data.slice(id, 1).select(pl.col("amplitudes")).collect()        
+        s = wrap_signal(json.loads(id_df[0, 0]))
         st.altair_chart(signal_chart(s), use_container_width=True)
 
 
     st.markdown(get_markdown_text('clustering-2'))
-    dwt_clustering.show_sparse_code(node_data)
+
+    ex_df = node_data.slice(0,5).collect().to_pandas()
+    ex_df['DWT coefficients'] = ex_df['DWT coefficients'].apply( lambda x: np.array(json.loads(x)))
+
+    dwt_clustering.show_sparse_code(ex_df)
 
 
 def show_summary():
@@ -240,15 +246,21 @@ def wrap_signal(signal):
     return pd.DataFrame(zip(x,signal), columns=['Frequency (MHz)', 'log(dB)'])
 
 
-@st.experimental_memo(max_entries=50)
 def get_node():
+    df = pl.scan_csv('data/proc-node.csv')
+    return df
+
+@st.experimental_memo(max_entries=50)
+def calc_node():
     df = pd.read_csv('data/node.csv')
     df.amplitudes = df.amplitudes.apply(lambda x: np.array(json.loads(x)) / 100)
+
     def _helper(s):        
         cfs = decomp_signal(s)
         th_cfs = dwt_shrinkage.threshold_dwt(cfs, saving = 0.95)[0]
         flat_th_cfs = np.fromiter(itertools.chain(*th_cfs), float)
         return flat_th_cfs
+
     df['DWT coefficients'] = df.amplitudes.apply(_helper)
     return df
 
