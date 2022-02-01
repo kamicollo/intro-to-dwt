@@ -1,4 +1,3 @@
-from matplotlib.pyplot import title
 import streamlit as st
 import numpy as np
 import pywt
@@ -52,7 +51,7 @@ def show_dwt_basics():
     w_str, discrete = family=wav_fam[option]
 
     wav_list = pywt.wavelist(w_str, kind='all')[:8]
-    st.pyplot(dwt_basics.get_wav_image(wav_list, discrete))
+    st.altair_chart(dwt_basics.get_wav_image(wav_list, discrete), use_container_width=True)
 
     #More text
     body_text = get_markdown_text('dwt-basics2')
@@ -218,15 +217,15 @@ def show_clustering():
 def show_summary():
     st.markdown(get_markdown_text('summary'))
 
-@st.experimental_memo
+@st.experimental_memo(max_entries=50)
 def decomp_signal(signal):
     return pywt.wavedec(signal, wavelet=WAV_FAMILY, mode='zero')
 
-@st.experimental_memo
+@st.experimental_memo(max_entries=50)
 def reconstruct_signal(coeffs):
     return pywt.waverec(coeffs, wavelet=WAV_FAMILY, mode='zero')
 
-@st.experimental_memo
+@st.experimental_memo(max_entries=50)
 def get_sample_signal():
     with open('data/sample.signal', 'r') as f:
         d = json.loads(f.readlines()[0])    
@@ -244,7 +243,7 @@ def wrap_signal(signal):
     return pd.DataFrame(zip(x,signal), columns=['Frequency (MHz)', 'log(dB)'])
 
 
-@st.experimental_memo
+@st.experimental_memo(max_entries=50)
 def get_node():
     df = pd.read_csv('data/node.csv')
     df.amplitudes = df.amplitudes.apply(lambda x: np.array(json.loads(x)) / 100)

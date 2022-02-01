@@ -1,23 +1,31 @@
 
+from turtle import width
 import streamlit as st
 import pywt
-import seaborn as sns
-import matplotlib.pyplot as plt
 import altair as alt
 from altair import datum
 import numpy as np
 import pandas as pd
+from collections import defaultdict
+import altair as alt
 
 
 
-@st.experimental_memo
+@st.experimental_memo(max_entries=50)
 def get_wav_image(wav_list, discrete):
     no_cols = 4
     no_rows = max(int(len(wav_list) / no_cols),1)
-    
 
-    f, axarr = plt.subplots(no_rows, no_cols)
-    f.set_size_inches(6, no_rows * 1.5)
+    rows = defaultdict(list)
+    
+    def base_chart(df, title):
+        return alt.Chart(df).mark_line().encode(
+            x= alt.X('x', axis=alt.Axis(title = title, labels=False)),
+            y= alt.Y('y', axis=alt.Axis(title = "", labels=False))           
+        ).properties(
+            height=150,
+            width=150
+        )    
 
     for i, w_str in enumerate(wav_list):        
         if discrete:
@@ -26,19 +34,15 @@ def get_wav_image(wav_list, discrete):
         else:
             w = pywt.ContinuousWavelet(w_str)
             psi_d, x = w.wavefun(level=10)
-        
-        col = i % no_cols
+                
         row = int(i / no_cols)    
-        if no_rows > 1:
-            ax = axarr[row, col]
-        else:
-            ax = axarr[col]
-            
-        sns.lineplot(x=x, y=psi_d, ax=ax)
-        ax.set_title(w_str, size=8)
-        ax.axes.yaxis.set_visible(False)
-        plt.tight_layout()
-    return f
+
+        c = base_chart(pd.DataFrame(zip(x,psi_d), columns=['x', 'y']), w_str)
+        rows[row].append(c)
+
+    res = alt.vconcat(*[alt.hconcat(*r) for r in rows.values()])    
+    
+    return res
 
 def get_coeff_plot(coeffs):
     

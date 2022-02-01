@@ -3,6 +3,7 @@ import numpy as np
 import pywt
 import itertools
 
+@st.experimental_memo(max_entries=50)
 def threshold_coeffs(coeffs, levels):
     cs = coeffs.copy()
     for l in levels:
@@ -23,7 +24,7 @@ def estimate_rreh_thresh(coeffs, saving=None):
         threshold = sorted_c[int(unrolled.size * saving)+1]
     return threshold
 
-
+@st.experimental_memo(max_entries=50)
 def threshold_dwt(coeffs, threshold=None, saving=None):
     '''
     Performs DWT coefficient thresholding
