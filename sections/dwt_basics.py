@@ -1,5 +1,4 @@
 
-from turtle import width
 import streamlit as st
 import pywt
 import altair as alt
