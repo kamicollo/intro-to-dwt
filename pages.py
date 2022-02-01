@@ -5,10 +5,7 @@ import json
 import pandas as pd
 import altair as alt
 import itertools
-import scipy.sparse as sps
-from sklearn.metrics import pairwise_distances
-import scipy.cluster.hierarchy as sch        
-import scipy.spatial.distance as spd
+import polars as pl
 
 from sections import dwt_basics, dwt_shrinkage, dwt_clustering
 
@@ -153,7 +150,7 @@ def show_clustering():
     st.markdown(get_markdown_text("clustering-1"))
 
     node_data = get_node()
-    sp_mat = dwt_clustering.get_sparse_matrix(node_data['DWT coefficients'])
+    sp_mat = dwt_clustering.get_sparse_matrix()    
     threshold = 5500
     model, clusters = dwt_clustering.run_clustering(sp_mat, threshold)
 

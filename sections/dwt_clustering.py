@@ -2,7 +2,7 @@ import streamlit as st
 
 from sklearn.metrics import pairwise_distances
 from scipy.cluster.hierarchy import linkage, fcluster
-from scipy.sparse import csr_matrix
+from scipy.sparse import csr_matrix, save_npz, load_npz
 from scipy.spatial.distance import squareform
 import numpy as np
 import pywt
@@ -21,7 +21,10 @@ def run_clustering(_sp_mat, threshold=0):
     return model, clusters
 
 @st.experimental_memo(max_entries=50)
-def get_sparse_matrix(series):
+def get_sparse_matrix():
+    return load_npz('data/sparse_matrix.npz')
+
+def calc_sparse_matrix(series):
     rows = np.array([], dtype=int)
     data = np.array([], dtype=float)
     cols = np.array([], dtype=int)
@@ -31,7 +34,8 @@ def get_sparse_matrix(series):
         cols = np.concatenate((cols, inds))
         rows = np.concatenate((rows, np.ones((len(inds)), dtype=int) * i))
     
-    return csr_matrix((data, (rows, cols)))
+    m = csr_matrix((data, (rows, cols)))    
+    return m
 
 
 @st.experimental_memo(max_entries=50)
