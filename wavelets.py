@@ -1,14 +1,20 @@
 import streamlit as st
-import pages 
+import pages
 import hashlib
+import altair as alt
+
+alt.data_transformers.disable_max_rows()
 
 
-st.markdown('''
+st.markdown(
+    """
 <style>
 button {
     width: 250px !important
 }
-</style>''', unsafe_allow_html=True)
+</style>""",
+    unsafe_allow_html=True,
+)
 
 
 mapping = {
@@ -17,27 +23,31 @@ mapping = {
     "DWT Shrinkage": pages.show_dwt_shrinkage,
     "DWT and Scalograms": pages.show_scalograms,
     "DWT Clustering": pages.show_clustering,
-    "Summary": pages.show_summary
+    "Summary": pages.show_summary,
 }
 
 
 def show_page(page):
-    st.session_state.page = page    
+    st.session_state.page = page
 
-    
+
 def show_nav_buttons(page):
     keys = list(mapping.keys())
-    no_cols = 3    
+    no_cols = 3
 
     cols = st.columns(no_cols)
     ind = keys.index(page)
     if ind > 0:
         title = keys[ind - 1]
-        cols[0].button(" ← \u00A0\u00A0\u00A0" + title, on_click=show_page, args=(title, ))
+        cols[0].button(
+            " ← \u00a0\u00a0\u00a0" + title, on_click=show_page, args=(title,)
+        )
     if ind + 1 < len(mapping):
         title = keys[ind + 1]
-        cols[no_cols - 1].button(title + "\u00A0\u00A0\u00A0 → ", on_click=show_page, args=(title, ))
-    
+        cols[no_cols - 1].button(
+            title + "\u00a0\u00a0\u00a0 → ", on_click=show_page, args=(title,)
+        )
+
 
 def introduction():
     st.header("Introduction")
@@ -45,36 +55,37 @@ def introduction():
 
 def show_password():
     st.header("This site is password protected")
-    text = st.text_input("Enter password")    
+    text = st.text_input("Enter password")
     st.session_state.password = text
 
+
 def get_markdown_text(filename):
-    with open('md/' + filename + '.md') as f:
+    with open("md/" + filename + ".md") as f:
         lines = f.readlines()
-    return ''.join(lines)
+    return "".join(lines)
 
 
 def show_app():
     st.sidebar.subheader("Menu")
-    for t in mapping.keys():    
-        st.sidebar.button(t, on_click=show_page, key='menu' + t, args=(t, ))
-    
-    st.sidebar.markdown(get_markdown_text('about-me'))
+    for t in mapping.keys():
+        st.sidebar.button(t, on_click=show_page, key="menu" + t, args=(t,))
 
-    if 'page' not in st.session_state:
-        st.session_state.page = 'Home'
+    st.sidebar.markdown(get_markdown_text("about-me"))
+
+    if "page" not in st.session_state:
+        st.session_state.page = "Home"
 
     page = st.session_state.page
-    func = mapping[page]    
+    func = mapping[page]
     func()
     st.write("")
     show_nav_buttons(page)
 
 
 def check_password():
-    PASS = 'c750a40e2e5c5c1029326927401d4a21'
+    PASS = "c750a40e2e5c5c1029326927401d4a21"
 
-    if 'password' not in st.session_state:
+    if "password" not in st.session_state:
         show_password()
         hash = hashlib.md5(st.session_state.password.encode()).hexdigest()
 
@@ -85,10 +96,9 @@ def check_password():
             hash = hashlib.md5(st.session_state.password.encode()).hexdigest()
             if hash != PASS:
                 st.warning("Wrong password")
-        
 
     if hash == PASS:
-        
         show_app()
+
 
 show_app()

@@ -1,12 +1,10 @@
 from __future__ import absolute_import
 
 from collections import OrderedDict
-from os import truncate
 
-from plotly import exceptions, optional_imports
+from plotly import optional_imports
 from plotly.graph_objs import graph_objs
 
-import streamlit as st
 
 # Optional imports, may be None for users that only use our core functionality.
 np = optional_imports.get_module("numpy")
@@ -14,14 +12,15 @@ scp = optional_imports.get_module("scipy")
 sch = optional_imports.get_module("scipy.cluster.hierarchy")
 scs = optional_imports.get_module("scipy.spatial")
 
+
 def create_dendrogram(
     X,
     orientation="bottom",
     labels=None,
-    colorscale=None,    
+    colorscale=None,
     hovertext=None,
     color_threshold=None,
-    height=np.inf
+    height=np.inf,
 ):
     """
     Function that returns a dendrogram Plotly figure object. This is a thin
@@ -51,7 +50,7 @@ def create_dendrogram(
     >>> fig = create_dendrogram(X)
     >>> fig.show()
     Example 2: Dendrogram to put on the left of the heatmap
-    
+
     >>> from plotly.figure_factory import create_dendrogram
     >>> import numpy as np
     >>> X = np.random.rand(5,5)
@@ -60,7 +59,7 @@ def create_dendrogram(
     >>> dendro.update_layout({'width':700, 'height':500}) # doctest: +SKIP
     >>> dendro.show()
     Example 3: Dendrogram with Pandas
-    
+
     >>> from plotly.figure_factory import create_dendrogram
     >>> import numpy as np
     >>> import pandas as pd
@@ -74,16 +73,15 @@ def create_dendrogram(
             "FigureFactory.create_dendrogram requires scipy, \
                             scipy.spatial and scipy.hierarchy"
         )
-    
 
     dendrogram = _Dendrogram(
         X,
         orientation,
         labels,
-        colorscale,        
+        colorscale,
         hovertext=hovertext,
         color_threshold=color_threshold,
-        height=height
+        height=height,
     )
 
     return graph_objs.Figure(data=dendrogram.data, layout=dendrogram.layout)
@@ -101,7 +99,7 @@ class _Dendrogram(object):
         width=np.inf,
         height=np.inf,
         xaxis="xaxis",
-        yaxis="yaxis",        
+        yaxis="yaxis",
         hovertext=None,
         color_threshold=None,
     ):
@@ -123,7 +121,6 @@ class _Dendrogram(object):
             self.sign[self.yaxis] = 1
         else:
             self.sign[self.yaxis] = -1
-        
 
         (dd_traces, xvals, yvals, ordered_labels, leaves) = self.get_dendrogram_traces(
             X, colorscale, hovertext, color_threshold
@@ -284,9 +281,7 @@ class _Dendrogram(object):
 
         return self.layout
 
-    def get_dendrogram_traces(
-        self, X, colorscale, hovertext, color_threshold
-    ):
+    def get_dendrogram_traces(self, X, colorscale, hovertext, color_threshold):
         """
         Calculates all the elements needed for plotting a dendrogram.
         :param (ndarray) X: Matrix of observations as array of arrays
@@ -306,52 +301,49 @@ class _Dendrogram(object):
                 appear on the plot
             (e) P['leaves']: left-to-right traversal of the leaves
         """
-        
-        T = sch.fcluster(X, color_threshold, criterion='distance')
+
+        T = sch.fcluster(X, color_threshold, criterion="distance")
 
         leaders, clusters = sch.leaders(X, T)
         rootnode, nodelist = sch.to_tree(X, rd=True)
 
         cl_list = {}
-        for l,c in zip(leaders, clusters):
+        for l, c in zip(leaders, clusters):
             cl_list[c] = nodelist[l].pre_order(lambda x: x.id)
 
         def get_cluster_label(id):
-            
-            #grab first real leaf node of the passed id
+            # grab first real leaf node of the passed id
             leaf_nodes = nodelist[id].pre_order(lambda x: x.id if x.is_leaf() else None)
             lf_node = leaf_nodes[0]
 
-            #traverse all leader nodes, checking if they have the leaf node
-            for c, nodes in cl_list.items():                
+            # traverse all leader nodes, checking if they have the leaf node
+            for c, nodes in cl_list.items():
                 if lf_node in nodes:
                     cluster = c
                     cl_size = len(nodes)
                     break
 
-            #some weird bug
+            # some weird bug
             len_leaf = min(len(leaf_nodes), cl_size)
 
             return "Cluster " + str(cluster) + " ({} / {})".format(len_leaf, cl_size)
 
-
         P = sch.dendrogram(
             X,
             orientation=self.orientation,
-            #labels=self.labels,
+            # labels=self.labels,
             no_plot=True,
             color_threshold=color_threshold,
-            truncate_mode = 'level',
-            p = 4,
-            get_leaves = True,
-            leaf_label_func= get_cluster_label
-        )        
-                
+            truncate_mode="level",
+            p=4,
+            get_leaves=True,
+            leaf_label_func=get_cluster_label,
+        )
 
-        icoord = scp.array(P["icoord"])
-        dcoord = scp.array(P["dcoord"])
-        ordered_labels = scp.array(P["ivl"])
-        color_list = scp.array(P["color_list"])
+        icoord = np.array(P["icoord"])
+        dcoord = np.array(P["dcoord"])
+        ordered_labels = np.array(P["ivl"])
+        color_list = np.array(P["color_list"])
         colors = self.get_color_dict(colorscale)
 
         trace_list = []
