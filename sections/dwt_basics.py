@@ -4,7 +4,6 @@ from altair import datum
 import numpy as np
 import pandas as pd
 from collections import defaultdict
-import streamlit as st
 
 
 def get_wav_image(wav_list, discrete):
@@ -34,7 +33,6 @@ def get_wav_image(wav_list, discrete):
         row = int(i / no_cols)
 
         df = pd.DataFrame(zip(x, psi_d), columns=["x", "y"])
-        st.write(df.shape)
 
         c = base_chart(df, w_str)
         rows[row].append(c)

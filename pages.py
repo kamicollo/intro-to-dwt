@@ -47,7 +47,6 @@ def show_dwt_basics():
     w_str, discrete = wav_fam[option]
 
     wav_list = pywt.wavelist(w_str, kind="all")[:8]
-    st.code("hello")
     st.altair_chart(
         dwt_basics.get_wav_image(wav_list, discrete), use_container_width=True
     )
