@@ -8,6 +8,9 @@ import itertools
 import polars as pl
 
 from sections import dwt_basics, dwt_shrinkage, dwt_clustering
+import importlib
+
+importlib.reload(dwt_basics)
 
 WAV_FAMILY = "db2"
 
@@ -48,7 +51,7 @@ def show_dwt_basics():
 
     wav_list = pywt.wavelist(w_str, kind="all")[:8]
     st.altair_chart(
-        dwt_basics.get_wav_image(wav_list, discrete), use_container_width=True
+        dwt_basics.get_wav_image(wav_list, discrete), use_container_width=False
     )
 
     # More text

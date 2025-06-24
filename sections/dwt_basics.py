@@ -18,11 +18,14 @@ def get_wav_image(wav_list, discrete):
             .encode(
                 x=alt.X("x", axis=alt.Axis(title=title, labels=False)),
                 y=alt.Y("y", axis=alt.Axis(title="", labels=False)),
+                facet=alt.Facet("name", title=None, columns=no_cols),
             )
-            .properties(height=150, width=150)
+            .properties(height=50, width=150)
         )
 
-    for i, w_str in enumerate(wav_list):
+    dfs = []
+
+    for _, w_str in enumerate(wav_list):
         if discrete:
             w = pywt.Wavelet(w_str)
             _, psi_d, x = w.wavefun(level=4)
@@ -30,14 +33,14 @@ def get_wav_image(wav_list, discrete):
             w = pywt.ContinuousWavelet(w_str)
             psi_d, x = w.wavefun(level=4)
 
-        row = int(i / no_cols)
-
         df = pd.DataFrame(zip(x, psi_d), columns=["x", "y"])
+        df["name"] = w_str
+        # scale x to be between 0 and 1
+        df["x"] = (df["x"] - df["x"].min()) / (df["x"].max() - df["x"].min())
 
-        c = base_chart(df, w_str)
-        rows[row].append(c)
+        dfs.append(df)
 
-    res = alt.vconcat(*[alt.hconcat(*r) for r in rows.values()])
+    res = base_chart(pd.concat(dfs), "Wavelet")
 
     return res
 
